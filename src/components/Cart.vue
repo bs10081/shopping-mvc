@@ -1,4 +1,14 @@
-mounted() {
+<script>
+import axios from 'axios';
+
+export default {
+  name: 'Cart',
+  data() {
+    return {
+      cartItems: []
+    };
+  },
+  mounted() {
     this.getCart();
   },
   methods: {
@@ -11,4 +21,5 @@ mounted() {
       }
     }
   }
-  
+};
+</script>
