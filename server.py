@@ -50,7 +50,6 @@ def get_products():
     try:
         url = f"https://api.notion.com/v1/databases/{NOTION_DATABASE_ID_PRODUCTS}/query"
         # Ensure this is a post request
-        # 這很重要，回應要用 post 請求，，媽的，在這裡卡很久，GPT 是垃圾，我手動排錯的，幹
         response = requests.post(url, headers=HEADERS)
         if response.status_code == 200:
             products_data = response.json()
@@ -72,7 +71,7 @@ def get_products():
 #     try:
 #         url = f"https://api.notion.com/v1/pages/{product_id}"
 #         # Ensure this is a post request
-#         # 這很重要，回應要用 post 請求，，媽的，在這裡卡很久，GPT 是垃圾，我手動排錯的，幹
+#         # 回應要用 post 請求
 #         response = requests.post(url, headers=HEADERS)
 
 #         if response.status_code == 200:
