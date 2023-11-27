@@ -7,7 +7,7 @@ load_dotenv()
 
 # Environment variables
 NOTION_API_KEY = os.getenv('NOTION_API_KEY')
-NOTION_DATABASE_ID = os.getenv('NOTION_PAGES_ID')
+NOTION_DATABASE_ID = os.getenv('NOTION_DATABASE_ID_PRODUCTS')
 
 # Ensure environment variables are set
 if not NOTION_API_KEY or not NOTION_DATABASE_ID:
