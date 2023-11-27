@@ -3,6 +3,7 @@ import os
 import requests
 import logging
 from dotenv import load_dotenv
+import requests
 load_dotenv()  # 這會自動尋找並加載項目根目錄下的 .env 文件
 
 app = Flask(__name__)
@@ -40,6 +41,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+
+
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
@@ -50,6 +56,7 @@ def get_products():
     try:
         url = f"https://api.notion.com/v1/databases/{NOTION_DATABASE_ID_PRODUCTS}/query"
         # Ensure this is a post request
+        # 這很重要，回應要用 post 請求，，媽的，在這裡卡很久，GPT 是垃圾，我手動排錯的，幹
         response = requests.post(url, headers=HEADERS)
         if response.status_code == 200:
             products_data = response.json()
@@ -64,28 +71,6 @@ def get_products():
             {"error": "Unable to fetch products", "details": str(e)})
         response.status_code = 500
         return response
-
-
-# @app.route('/product/<product_id>', methods=['get'])
-# def get_product(product_id):
-#     try:
-#         url = f"https://api.notion.com/v1/pages/{product_id}"
-#         # Ensure this is a post request
-#         # 回應要用 post 請求
-#         response = requests.post(url, headers=HEADERS)
-
-#         if response.status_code == 200:
-#             product_data = response.json()
-#             product = parse_product(product_data)
-#             return jsonify(product)
-#         else:
-#             return jsonify({"error": "Unable to fetch product"}), response.status_code
-#     except Exception as e:
-#         app.logger.error(f"An error occurred: {e}")
-#         response = jsonify(
-#             {"error": "Unable to fetch product", "details": str(e)})
-#         response.status_code = 500
-#         return response
 
 
 def parse_products(notion_data):
@@ -109,7 +94,67 @@ def parse_products(notion_data):
             # 錯誤處理，可以選擇記錄錯誤並繼續，或返回錯誤響應
     return products
 
+# 以下是商家功能
 
+
+@app.route('/add_product', methods=['POST'])
+def add_product():
+    try:
+        data = request.json
+        print("Received data:", data)  # Debug: 輸出接收到的數據
+        # Construct the request to add the product to the Notion database
+        url = f"https://api.notion.com/v1/pages"
+        notion_payload = {
+            "parent": {"database_id": NOTION_DATABASE_ID_PRODUCTS},
+            "properties": {
+                "Name": {
+                    "rich_text": [
+                        {
+                            "text": {
+                                "content": data["name"]
+                            }
+                        }
+                    ]
+                },
+                "Description": {
+                    "rich_text": [
+                        {
+                            "text": {
+                                "content": data["description"]
+                            }
+                        }
+                    ]
+                },
+                "Category": {
+                    "multi_select": [{"name": category} for category in data.get("category", [])]
+                },
+                "Stock": {
+                    "number": data["stock"]
+                },
+                "Price": {
+                    "number": data["price"]
+                }
+            }
+        }
+        print("Payload to Notion:", notion_payload)  # Debug: 輸出構造的 payload
+        response = requests.post(url, json=notion_payload, headers=HEADERS)
+        print("Notion response status code:",
+              response.status_code)  # Debug: 輸出響應狀態碼
+        print("Notion response body:", response.text)  # Debug: 輸出響應正文
+        response = requests.post(url, json=notion_payload, headers=HEADERS)
+        if response.status_code == 200:
+            # If the Notion API call was successful
+            return jsonify({"message": "Product added successfully"}), 201
+        else:
+            # If the Notion API call failed
+            return jsonify({"error": "Failed to add product", "details": response.text}), 500
+
+    except Exception as e:
+        print("Error occurred:", e)  # Debug: 輸出錯誤信息
+        return jsonify({"error": "An error occurred while adding the product"}), 500
+
+
+# main
 if __name__ == '__main__':
     app.debug = True
     app.run()
