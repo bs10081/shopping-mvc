@@ -11,16 +11,23 @@
 <body>
     <header>
         <h1>線上購物</h1>
+
     </header>
+    <!-- Shopping Cart Section -->
+    <section id="shopping-cart">
+        <h2>購物車</h2>
+        <div id="cart-items">
+            <!-- Cart items will be listed here -->
+        </div>
+        <div id="cart-summary">
+            <span id="total-price">總價: 0</span>
+        </div>
+    </section>
+
     <main>
         <section id="product-list">
             <!-- 商品列表將在這裡動態生成 -->
         </section>
     </main>
-    <footer>
-        <button id="view-cart">查看購物車</button>
-    </footer>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
-
-</html>

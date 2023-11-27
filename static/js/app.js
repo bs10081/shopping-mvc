@@ -1,12 +1,14 @@
+document.addEventListener('DOMContentLoaded', fetchProducts);
 
-document.addEventListener('DOMContentLoaded', () => {
-    fetchProducts();
-});
+let shoppingCart = [];
 
 function fetchProducts() {
     fetch('/products')
         .then(response => response.json())
-        .then(products => displayProducts(products))
+        .then(products => {
+            productsList = products;
+            displayProducts(products);
+        })
         .catch(error => console.error('Error fetching products:', error));
 }
 
@@ -14,30 +16,79 @@ function displayProducts(products) {
     const productListElement = document.getElementById('product-list');
     productListElement.innerHTML = products.map(product => `
         <div class="product-item">
-            <img src="${product.image}" alt="${product.name}" class="product-image" />
             <h3>${product.name}</h3>
             <p>${product.description}</p>
             <p>價格: ${product.price}</p>
             <p>庫存: ${product.stock}</p>
             <p>分類: ${product.category.join(', ')}</p>
             <button onclick="addToCart('${product.id}')">加入購物車</button>
-        </div>
-    `).join('');
+            </div>`).join('');
 }
+
+
+// app.js - addToCart function updated
+let productsList = [];  // This will hold the fetched products list
+
+// This function fetches the list of products from the server
+function fetchProductsList() {
+    fetch('/products')
+        .then(response => response.json())
+        .then(products => {
+            productsList = products;
+            displayProducts(products);  // This is a hypothetical function to display products on the page
+        })
+        .catch(error => console.error('Error fetching products list:', error));
+}
+
 
 function addToCart(productId) {
-    // 假設購物車是一個簡單的陣列
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push(productId);
-    localStorage.setItem('cart', JSON.stringify(cart));
-
-    updateCartView();
+    const existingItem = shoppingCart.find(item => item.id === productId);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        const product = productsList.find(p => p.id === productId);
+        if (product) {
+            shoppingCart.push({ ...product, quantity: 1 });
+        } else {
+            console.error('Product not found');
+            return;
+        }
+    }
+    updateCartDisplay();
 }
 
-function updateCartView() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const cartElement = document.getElementById('cart');
-    cartElement.innerHTML = `購物車: ${cart.length} 項商品`;
+function updateCartDisplay() {
+    const cartItemsElement = document.getElementById('cart-items');
+    let totalPrice = 0;
+    cartItemsElement.innerHTML = shoppingCart.map(item => {
+        const itemTotalPrice = item.price * (item.quantity || 1);
+        totalPrice += itemTotalPrice;
+        return `
+            <div class="cart-item">
+                <span>${item.name}</span>
+                <span>單價: ${item.price}</span>
+                <span>數量: ${item.quantity || 1}</span>
+                <span>小計: ${itemTotalPrice}</span>
+                <button onclick="removeFromCart('${item.id}')">移除</button>
+            </div>
+        `;
+    }).join('');
+    // 更新總價
+    const totalPriceElement = document.getElementById('total-price');
+    totalPriceElement.textContent = `總價: ${totalPrice}`;
 }
 
-// 您可能還需要其他功能，例如顯示購物車詳細內容、從購物車中刪除商品等。
+function removeFromCart(productId) {
+    shoppingCart = shoppingCart.filter(item => item.id !== productId);
+    updateCartDisplay();
+}
+
+// CSS function
+window.addEventListener('scroll', function () {
+    var shoppingCart = document.getElementById('shopping-cart');
+    if (window.pageYOffset > shoppingCart.offsetTop) {
+        shoppingCart.classList.add('sticky');
+    } else {
+        shoppingCart.classList.remove('sticky');
+    }
+});
