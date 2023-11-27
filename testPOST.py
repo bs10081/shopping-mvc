@@ -1,8 +1,8 @@
 import requests
 
 # Notion API 配置
-NOTION_API_KEY = "secret_wrlnTaT6WQZuwhBIbLhPiOnJk79fAW4xD0imkNLP5vi"
-NOTION_DATABASE_ID = "c38f74a7308d4ce48ddf43a0141263ba"
+NOTION_API_KEY = ""
+NOTION_DATABASE_ID = ""
 HEADERS = {
     "Authorization": f"Bearer {NOTION_API_KEY}",
     "Content-Type": "application/json",
@@ -45,17 +45,6 @@ new_product_data = {
         },
         "Stock": {
             "number": 100
-        },
-        "Image": {
-            "files": [
-                {
-                    "type": "external",
-                    "name": "image.jpg",
-                    "external": {
-                        "url": "https://example.com/image.jpg"
-                    }
-                }
-            ]
         },
         "Category": {
             "multi_select": [
