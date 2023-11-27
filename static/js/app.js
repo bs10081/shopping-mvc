@@ -83,6 +83,7 @@ function removeFromCart(productId) {
     updateCartDisplay();
 }
 
+
 // CSS function
 window.addEventListener('scroll', function () {
     var shoppingCart = document.getElementById('shopping-cart');
@@ -91,4 +92,50 @@ window.addEventListener('scroll', function () {
     } else {
         shoppingCart.classList.remove('sticky');
     }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.getElementById('productForm');
+
+    form.onsubmit = function (event) {
+        event.preventDefault(); // 阻止表單默認提交行為
+
+        // 獲取表單內的數據
+        var name = document.getElementById('name').value;
+        var description = document.getElementById('description').value;
+        var price = document.getElementById('price').value || 0;
+        var stock = document.getElementById('stock').value || 0;
+        // 構造要發送的數據
+        var data = {
+            name: name,
+            description: description,
+            price: Number(price),
+            stock: Number(stock)
+        };
+        console.log('Sending data:', JSON.stringify(data));
+
+        // 使用 fetch API 發送數據到後端
+        fetch('/add_product', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        }).then(function (data) {
+            if (data.message) {
+                alert('商品添加成功！');
+                // 可以在這裡清空表單或進行其他操作
+            } else {
+                alert('商品添加失敗：' + data.error);
+            }
+        }).catch(function (error) {
+            console.error('There has been a problem with your fetch operation:', error);
+            alert('發生錯誤：' + error.message);
+        });
+    };
 });
