@@ -1,4 +1,4 @@
 .env
 .DS_Store
 instance/shop.db
-__pycache__/server.cpython-310.pyc
+__pycache__/*.pyc
