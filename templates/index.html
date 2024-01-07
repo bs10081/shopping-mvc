@@ -1,33 +1,52 @@
+<!-- index.html -->
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>線上購物網站</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>McDonald's</title>
+    <link rel="stylesheet" href="static/css/style.css">
 </head>
 
 <body>
-    <header>
-        <h1>線上購物</h1>
-
-    </header>
-    <!-- Shopping Cart Section -->
-    <section id="shopping-cart">
-        <h2>購物車</h2>
-        <div id="cart-items">
-            <!-- Cart items will be listed here -->
+    <h1>What Food You Can Buy</h1>
+    <div id="product-list">
+        {% for product in products %}
+        <div class="product-item">
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+            <p>Price: {{ product.price }}</p>
+            <!-- 加入購物車按鈕 -->
+            <form action="/add_to_cart/{{ product.id }}" method="post">
+                <button type="submit" class="add-to-cart-button">Add to Cart</button>
+            </form>
         </div>
-        <div id="cart-summary">
-            <span id="total-price">總價: 0</span>
-        </div>
-    </section>
+        {% endfor %}
+    </div>
 
-    <main>
-        <section id="product-list">
-            <!-- 商品列表將在這裡動態生成 -->
-        </section>
-    </main>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <!-- 在購物車部分顯示每個項目 -->
+    <h2>On Your Cart</h2>
+    <div id="cart-items">
+        {% for item in cart_items %}
+        <div class="cart-item">
+            <p>{{ item.product.name }}</p>
+            <form action="/update_cart_item/{{ item.id }}" method="post" style="display: flex; align-items: center;">
+                <button type="submit" name="remove_one" style="margin-right: 10px;">-</button>
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" style="margin-right: 10px;">
+                <button type="submit" name="add_one"
+                    style="display: flex; align-items: center; margin-right: 10px;">+</button>
+                <button type="submit" name="update" ">Update</button>
+            </form>
+            <form action=" /remove_cart_item/{{ item.id }}" method="post">
+                    <button type="submit" name="remove">Delete</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    <h2>Checkout</h2>
+    <p>Total Price: {{ total_price }}</p>
+    <form action="/checkout" method="post">
+        <button type="submit">Checkout</button>
 </body>
+
+</html>

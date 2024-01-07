@@ -1,0 +1,35 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+</head>
+
+<body>
+    <h1>Admin Page</h1>
+    <h2>Add Product</h2>
+    <form method="POST">
+        <input type="text" name="name" placeholder="Name" required>
+        <textarea name="description" placeholder="Description" required></textarea>
+        <input type="number" name="price" placeholder="Price" step="0.01" required>
+        <button type="submit" name="add">Add Product</button>
+    </form>
+
+    <h2>Product List</h2>
+    {% for product in products %}
+    <div class="product-item">
+        <form method="POST">
+            <input type="text" name="name" value="{{ product.name }}" required>
+            <textarea name="description" required>{{ product.description }}</textarea>
+            <input type="number" name="price" value="{{ product.price }}" step="0.01" required>
+            <button type="submit" name="edit" value="{{ product.id }}">Edit</button>
+            <button type="submit" name="delete" value="{{ product.id }}"
+                onclick="return confirm('Are you sure?');">Delete</button>
+        </form>
+    </div>
+    {% endfor %}
+</body>
+
+</html>

@@ -1,162 +1,152 @@
-from flask import Flask, jsonify, request, send_from_directory, render_template
 import os
-import requests
-import logging
 from dotenv import load_dotenv
-import requests
-load_dotenv()  # 這會自動尋找並加載項目根目錄下的 .env 文件
+from flask import Flask, render_template, request, redirect, url_for, session
+from flask_sqlalchemy import SQLAlchemy
+
+
+load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.INFO)  # 設置日誌級別為 DEBUG
-# Environment variables
-NOTION_API_KEY = os.getenv('NOTION_API_KEY')
-NOTION_DATABASE_ID = os.getenv('NOTION_DATABASE_ID')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Define the Product model
 
 
-# Environment variables for different Notion databases and API keys
-NOTION_API_KEY = os.getenv('NOTION_API_KEY')
-NOTION_DATABASE_ID_PRODUCTS = os.getenv('NOTION_DATABASE_ID_PRODUCTS')
-NOTION_DATABASE_ID_CART = os.getenv('NOTION_DATABASE_ID_CART')
-# Ensure environment variables are set
-if not NOTION_API_KEY or not NOTION_DATABASE_ID_PRODUCTS:
-    raise ValueError(
-        "Please set the NOTION_API_KEY and NOTION_DATABASE_ID environment variables.")
-# Headers for Notion API requests for the cart
-HEADERS_CART = {
-    "Authorization": f"Bearer {NOTION_API_KEY}",
-    "Notion-Version": "2021-05-13",
-    "Content-Type": "application/json"
-}
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Float, nullable=False)
 
-# Headers for Notion API
-HEADERS = {
-    "Authorization": f"Bearer {NOTION_API_KEY}",
-    "Content-Type": "application/json",
-    "Notion-Version": "2022-02-22"
-}
+    def __repr__(self):
+        return f'<Product {self.name}>'
+
+# Define the Cart model
+
+
+class Cart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey(
+        'product.id'), nullable=False)
+    quantity = db.Column(db.Integer, default=1, nullable=False)
+    product = db.relationship('Product', backref=db.backref('cart', lazy=True))
+
+    def __repr__(self):
+        return f'<Cart {self.product_id}x{self.quantity}>'
+
+# Route for the home page
 
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    products = Product.query.all()
+    cart_items = Cart.query.all()  # 從購物車表中讀取所有項目
+    total_price = sum(
+        [item.quantity * item.product.price for item in cart_items])
+    return render_template('index.html', products=products, cart_items=cart_items, total_price=total_price)
 
 
-@app.route('/admin')
+# Route to add a product to the cart
+
+
+@app.route('/add_to_cart/<int:product_id>', methods=['POST'])
+def add_to_cart(product_id):
+    product = Product.query.get(product_id)
+    if product:
+        cart_item = Cart.query.filter_by(product_id=product.id).first()
+        if cart_item:
+            cart_item.quantity += 1
+        else:
+            new_cart_item = Cart(product_id=product.id)
+            db.session.add(new_cart_item)
+        db.session.commit()
+    return redirect(url_for('home'))
+# Route to edit the quantity of a product in the cart
+
+
+@app.route('/update_cart_item/<int:item_id>', methods=['POST'])
+def update_cart_item(item_id):
+    cart_item = Cart.query.get_or_404(item_id)
+    if 'update' in request.form:
+        cart_item.quantity = request.form.get('quantity', type=int)
+        db.session.commit()
+    elif 'add_one' in request.form:
+        cart_item.quantity += 1
+        db.session.commit()
+    elif 'remove_one' in request.form:
+        cart_item.quantity -= 1
+        if cart_item.quantity <= 0:
+            db.session.delete(cart_item)
+        db.session.commit()
+    return redirect(url_for('home'))
+
+
+# Route to remove a product from the cart
+
+
+@app.route('/remove_cart_item/<int:item_id>', methods=['POST'])
+def remove_cart_item(item_id):
+    cart_item = Cart.query.get_or_404(item_id)
+    # 完全刪除商品項目
+    db.session.delete(cart_item)
+    db.session.commit()
+    return redirect(url_for('home'))
+
+# Route to view the cart
+
+
+@app.route('/cart')
+def view_cart():
+    cart_items = Cart.query.all()
+    total_price = sum(
+        [item.product.price * item.quantity for item in cart_items])
+    return render_template('cart.html', cart_items=cart_items, total_price=total_price)
+
+
+# Route to view the admin page
+
+@app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    return render_template('admin.html')
+    if request.method == 'POST':
+        if "add" in request.form:
+            # 從表單中獲取新產品資料並添加到數據庫
+            new_product = Product(
+                name=request.form['name'],
+                description=request.form['description'],
+                price=request.form['price']
+            )
+            db.session.add(new_product)
+            db.session.commit()
+        elif "edit" in request.form:
+            # 從表單中獲取編輯的產品資料並更新
+            product_id = request.form['edit']
+            product = Product.query.get(product_id)
+            product.name = request.form['name']
+            product.description = request.form['description']
+            product.price = request.form['price']
+            db.session.commit()
+        elif "delete" in request.form:
+            # 刪除指定的產品
+            product_id = request.form['delete']
+            product = Product.query.get(product_id)
+            db.session.delete(product)
+            db.session.commit()
+
+    products = Product.query.all()
+    return render_template('admin.html', products=products)
 
 
-@app.route('/static/<path:filename>')
-def serve_static(filename):
-    return send_from_directory('static', filename)
+# Route to create the database (for first-time setup)
 
 
-@app.route('/products', methods=['get'])
-def get_products():
-    try:
-        url = f"https://api.notion.com/v1/databases/{NOTION_DATABASE_ID_PRODUCTS}/query"
-        # Ensure this is a post request
-        # 這很重要，回應要用 post 請求，，媽的，在這裡卡很久，GPT 是垃圾，我手動排錯的，幹
-        response = requests.post(url, headers=HEADERS)
-        if response.status_code == 200:
-            products_data = response.json()
-            products = parse_products(products_data)
-            print(products)
-            return jsonify(products)
-        else:
-            return jsonify({"error": "Unable to fetch products"}), response.status_code
-    except Exception as e:
-        app.logger.error(f"An error occurred: {e}")
-        response = jsonify(
-            {"error": "Unable to fetch products", "details": str(e)})
-        response.status_code = 500
-        return response
+@app.route('/create_db')
+def create_db():
+    db.create_all()
+    return 'Database created!'
 
 
-def parse_products(notion_data):
-    products = []
-    for item in notion_data.get("results", []):
-        try:
-            properties = item.get("properties", {})
-            product = {
-                "id": item.get("id"),
-                "name": next((text['plain_text'] for text in properties.get("Name", {}).get("rich_text", [])), ""),
-                "description": next((text['plain_text'] for text in properties.get("Description", {}).get("rich_text", [])), ""),
-                "category": [category.get("name", "") for category in properties.get("Category", {}).get("multi_select", [])],
-                "stock": properties.get("Stock", {}).get("number", 0),
-                # "image": next((file.get("name", "") for file in properties.get("Image", {}).get("url", [])), ""),
-                "price": properties.get("Price", {}).get("number", 0.0),
-                "notion_url": item.get("url", "")
-            }
-            products.append(product)
-        except Exception as e:
-            app.logger.error(f"Error parsing product: {str(e)}")
-            # 錯誤處理，可以選擇記錄錯誤並繼續，或返回錯誤響應
-    return products
-
-# 以下是商家功能
-
-
-@app.route('/add_product', methods=['POST'])
-def add_product():
-    try:
-        data = request.json
-        print("Received data:", data)  # Debug: 輸出接收到的數據
-        # Construct the request to add the product to the Notion database
-        url = f"https://api.notion.com/v1/pages"
-        notion_payload = {
-            "parent": {"database_id": NOTION_DATABASE_ID_PRODUCTS},
-            "properties": {
-                "Name": {
-                    "rich_text": [
-                        {
-                            "text": {
-                                "content": data["name"]
-                            }
-                        }
-                    ]
-                },
-                "Description": {
-                    "rich_text": [
-                        {
-                            "text": {
-                                "content": data["description"]
-                            }
-                        }
-                    ]
-                },
-                "Category": {
-                    "multi_select": [{"name": category} for category in data.get("category", [])]
-                },
-                "Stock": {
-                    "number": data["stock"]
-                },
-                "Price": {
-                    "number": data["price"]
-                }
-            }
-        }
-        print("Payload to Notion:", notion_payload)  # Debug: 輸出構造的 payload
-        response = requests.post(url, json=notion_payload, headers=HEADERS)
-        print("Notion response status code:",
-              response.status_code)  # Debug: 輸出響應狀態碼
-        print("Notion response body:", response.text)  # Debug: 輸出響應正文
-        response = requests.post(url, json=notion_payload, headers=HEADERS)
-        if response.status_code == 200:
-            # If the Notion API call was successful
-            return jsonify({"message": "Product added successfully"}), 201
-        else:
-            # If the Notion API call failed
-            return jsonify({"error": "Failed to add product", "details": response.text}), 500
-
-    except Exception as e:
-        print("Error occurred:", e)  # Debug: 輸出錯誤信息
-        return jsonify({"error": "An error occurred while adding the product"}), 500
-
-
-# main
 if __name__ == '__main__':
-    app.debug = True
-    app.run()
-
-# Please ensure that there is a route handler for '/product/<product_id>' to fetch product details from Notion
+    app.run(debug=True)
