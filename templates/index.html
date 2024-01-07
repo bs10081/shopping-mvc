@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線上購物網站</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header>
+        <h1>線上購物</h1>
+
+    </header>
+    <!-- Shopping Cart Section -->
+    <section id="shopping-cart">
+        <h2>購物車</h2>
+        <div id="cart-items">
+            <!-- Cart items will be listed here -->
+        </div>
+        <div id="cart-summary">
+            <span id="total-price">總價: 0</span>
+        </div>
+    </section>
+
+    <main>
+        <section id="product-list">
+            <!-- 商品列表將在這裡動態生成 -->
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>

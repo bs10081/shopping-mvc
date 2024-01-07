@@ -1,0 +1,161 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #F0F2F6;
+    color: #333;
+    overflow: auto;
+}
+
+header {
+    background-color: #6200EE;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+
+}
+
+main {
+    padding: 1rem;
+    overflow: auto;
+}
+
+#product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    overflow: auto;
+    padding-bottom: 1rem;
+    padding-right: 0.1rem;
+    flex: 1;
+    /* 填滿剩餘空間 */
+}
+
+.product-item {
+    border: 1px solid #DDD;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    overflow: auto;
+    /* box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1); */
+    /* Add box shadow */
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    background-color: #6200EE;
+    padding: 1rem;
+    text-align: center;
+}
+
+button {
+    background-color: #03DAC6;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    color: white;
+    font-size: 1rem;
+}
+
+/* Existing styles for the shopping cart */
+#shopping-cart {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #fff;
+    border: 1px solid #DDD;
+    border-radius: 16px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+    /* 平滑過渡陰影效果 */
+    flex: 0 0 auto;
+    /* 不伸縮，保持固定寬度 */
+    width: auto;
+    /* 或您想要的固定寬度 */
+}
+
+/* #shopping-cart.sticky {
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    /* 懸浮時添加陰影 */
+}
+
+*/ .outer-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+/* Add styles for cart items */
+.cart-item {
+    border-bottom: 1px solid #DDD;
+    padding: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item span {
+    margin-right: 0.5rem;
+}
+
+/* Style the remove button to match the design */
+.cart-item button {
+    background-color: #6200EE;
+    /* Match header/footer color */
+    color: white;
+}
+
+.addToCart {
+    position: fixed;
+    right: 20px;
+    /* 與視窗右邊距離 */
+    bottom: 20px;
+    /* 與視窗底部距離 */
+    /* 按鈕的其他樣式 */
+}
+
+/* Style the total price */
+#total-price {
+    font-weight: bold;
+    margin-top: 1rem;
+    display: block;
+    /* Or flex if you want to align it differently */
+    text-align: right;
+}
+
+/* If you have an element for the 'checkout' or 'clear cart', you can style it here */
+#checkout-button,
+#clear-cart-button {
+    background-color: #03DAC6;
+    /* Match the button color */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+/* You might want to add some hover effects for the buttons */
+button:hover {
+    opacity: 0.9;
+}
+
+main {
+    display: flex;
+    /* Use flexbox for layout */
+    flex-direction: row;
+    /* Align children in a row */
+    align-items: flex-start;
+    /* Align items to the start of the flex container */
+}
