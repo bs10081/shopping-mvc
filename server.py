@@ -288,11 +288,11 @@ def logout():
 # Route to create the database (for first-time setup)
 
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     if current_user.role == 'admin':
-        return render_template('admin.html')
+        return redirect(url_for('admin'))
     elif current_user.role == 'customer':
         # 假設 Cart 是一個模型，存儲著用戶購物車內容
         user_cart_items = Cart.query.filter_by(user_id=current_user.id).all()
