@@ -104,7 +104,7 @@ document.getElementById('checkout-btn').addEventListener('click', () => {
                 // document.getElementById('total-price').style.display = 'none';
 
                 // 清空購物車顯示
-                // document.getElementById('cart').innerHTML = '';
+                document.getElementById('cart').innerHTML = '';
                 location.reload();
             }
 

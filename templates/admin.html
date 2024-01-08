@@ -5,10 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Page</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/admin.js"></script>
 </head>
 
 <body>
     <h1>Admin Page</h1>
+    <button onclick="window.location.href='/logout'">Logout</button>
+    <button onclick="window.location.href='/shop'">Go Shopping</button>
     <h2>Add Product</h2>
     <form method="POST">
         <input type="text" name="name" placeholder="Name" required>
@@ -30,6 +34,12 @@
         </form>
     </div>
     {% endfor %}
+
+    <h2>Order Management</h2>
+    <div id="order-list">
+        <!-- 這裡將動態填入訂單資訊 -->
+    </div>
+
 </body>
 
 </html>
