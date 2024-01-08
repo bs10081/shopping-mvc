@@ -10,7 +10,8 @@ from flask import flash, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 # hash password
 from werkzeug.security import generate_password_hash, check_password_hash
-
+# decimal
+from decimal import Decimal
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -117,7 +118,7 @@ def home():
     cart_items = Cart.query.all()  # 從購物車表中讀取所有項目
     total_price = sum(
         [item.quantity * item.product.price for item in cart_items])
-    return render_template('index.html', products=products, cart_items=cart_items, total_price=total_price)
+    return render_template('index.html', cart_items=cart_items, total_price=total_price)
 
 
 # Route to add a product to the cart
@@ -193,7 +194,7 @@ def cart():
         'quantity': item.quantity,
         'price': str(item.product.price),
     } for item in cart_items]
-    return jsonify(cart_items=cart_data, total_price=total_price)
+    return jsonify(cart_items=cart_data)
 
 
 # Route to view the admin page

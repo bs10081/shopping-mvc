@@ -48,19 +48,18 @@
     </div>
     <!-- 總價 -->
     <div id="checkout">
-        {% for item in cart_items %}
         <h3>Checkout</h3>
-        <div id="">
-            <p>Total Price: {{ item.quantity * item.product.price }}</p>
+        <div id="total-price-container">
+            <p>Total Price: <span id="total-price-value">0</span></p>
         </div>
         <div>
             <button id="checkout-btn">Checkout</button>
         </div>
-        {% else %}
-        {% endfor %}
+    </div>
 
 
-        <script src="static/js/shop.js"></script>
+
+    <script src="static/js/shop.js"></script>
 </body>
 
 </html>

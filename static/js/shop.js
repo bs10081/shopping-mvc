@@ -114,3 +114,17 @@ document.getElementById('checkout-btn').addEventListener('click', () => {
         });
 });
 
+function updateTotalPrice() {
+    fetch('/cart')
+        .then(response => response.json())
+        .then(data => {
+            if (data.cart_items) {
+                const totalPrice = data.cart_items.reduce((acc, item) => acc + (item.quantity * item.price), 0);
+                document.getElementById('total-price-value').innerText = totalPrice.toFixed(2);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// 確保在頁面加載和購物車更新時調用這個函數
+document.addEventListener('DOMContentLoaded', updateTotalPrice);
