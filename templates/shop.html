@@ -35,13 +35,12 @@
         <div class="cart-item">
             <span>{{ item.product.name }} - Quantity: {{ item.quantity }}</span>
             <form action="/update_cart_item/{{ item.id }}" method="post">
+                <button type="submit" name="remove">Delete</button>
                 <button type="submit" name="remove_one">-</button>
                 <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
                 <button type="submit" name="add_one">+</button>
                 <button type="submit" name="update">Update</button>
-                <button type="submit" name="delete">Delete</button>
             </form>
-            <!-- 添加其他必要的按鈕或信息 -->
         </div>
         {% else %}
         <p>Your cart is empty.</p>
