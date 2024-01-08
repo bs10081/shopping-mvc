@@ -257,10 +257,19 @@ def register():
     return render_template('register.html')
 
 
-# Route to view the login page
+# 設置用戶加載函數 
 
 @login_manager.user_loader
 def load_user(user_id):
+    """
+    Load a user from the database based on the user_id.
+
+    Args:
+        user_id (int): The ID of the user.
+
+    Returns:
+        User: The user object corresponding to the user_id.
+    """
     return User.query.get(int(user_id))
 
 
@@ -356,9 +365,8 @@ def order_status():
 def rating():
     return render_template('rating.html')
 
-#
 
-
+# 客戶查看所有訂單的路由
 @app.route('/user_orders')
 @login_required
 def user_orders():
@@ -388,6 +396,7 @@ def rate_order(order_id):
 @app.route('/orders', methods=['GET'])
 @login_required
 def orders():
+    # 檢查用戶是否有權限訪問管理員頁面
     if current_user.role != 'admin':
         return jsonify({'error': 'Unauthorized'}), 401
     orders = Order.query.all()
@@ -419,6 +428,9 @@ def update_order_status(order_id):
 
 @app.route('/driver')
 def driver_page():
+    # 檢查用戶是否有權限訪問管理員頁面
+    if current_user.role != 'admin':
+        return redirect(url_for("dashboard")), 401
     # 返回 driver.html 的內容
     return render_template('driver.html')
 
