@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Shop</title>
+    <!-- 引入CSS樣式 -->
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body>
+    <h1>Shop</h1>
+    <!-- dashboard -->
+    <div id="dashboard">
+        <h2>Welcome, {{ current_user.username }}!</h2>
+        <button onclick="window.location.href='/dashboard'">Dashboard</button>
+        <button onclick="window.location.href='/logout'">Logout</button>
+    </div>
+    <p></p>
+    <div id="product-list">
+        <!-- 產品列表由後端動態生成 -->
+        {% for product in products %}
+        <div class="product">
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+            <p>Price: {{ product.price }}</p>
+            <button onclick="addToCart({{ product.id }})">Add to Cart</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h2>Your Cart</h2>
+    <div id="cart">
+        {% for item in cart_items %}
+        <div class="cart-item">
+            <span>{{ item.product.name }} - Quantity: {{ item.quantity }}</span>
+            <form action="/update_cart_item/{{ item.id }}" method="post">
+                <button type="submit" name="remove_one">-</button>
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
+                <button type="submit" name="add_one">+</button>
+                <button type="submit" name="update">Update</button>
+                <button type="submit" name="delete">Delete</button>
+            </form>
+            <!-- 添加其他必要的按鈕或信息 -->
+        </div>
+        {% else %}
+        <p>Your cart is empty.</p>
+        {% endfor %}
+    </div>
+    <!-- 總價 -->
+    <div id="checkout">
+        {% for item in cart_items %}
+        <h3>Checkout</h3>
+        <div id="">
+            <p>Total Price: {{ item.quantity * item.product.price }}</p>
+        </div>
+        <div>
+            <button id="checkout-btn">Checkout</button>
+        </div>
+        {% else %}
+        {% endfor %}
+
+
+        <script src="static/js/shop.js"></script>
+</body>
+
+</html>
