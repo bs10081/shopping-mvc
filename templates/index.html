@@ -4,52 +4,58 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>McDonald's</title>
+    <title>eShop</title>
     <link rel="stylesheet" href="static/css/style.css">
+    <script src="static/js/index.js"></script>
+    <!-- Unsplash 隨機背景圖片 -->
+    <style>
+        body {
+            background-image: url("https://source.unsplash.com/random/");
+            background-size: fill;
+            text-align: center;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            backdrop-filter: blur(10px);
+        }
+
+        #index {
+            background-color: rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #000;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            width: 150px;
+            /* Add this line to set the width of the buttons */
+        }
+    </style>
 </head>
 
 <body>
-    <h1>McDonald's</h1>
-    <!-- login button -->
-    <button onclick="window.location.href='/login'">Login</button>
-    <!-- register button -->
-    <button onclick="window.location.href='/register'">Register</button>
-    <h1>What Food You Can Buy</h1>
-    <div id="product-list">
-        {% for product in products %}
-        <div class="product-item">
-            <h2>{{ product.name }}</h2>
-            <p>{{ product.description }}</p>
-            <p>Price: {{ product.price }}</p>
-            <!-- 加入購物車按鈕 -->
-            <button onclick="window.location.href='/login'">Add to Cart</button>
-        </div>
-        {% endfor %}
+    <div id="index">
+        <h1>eShop</h1>
+        <!-- login button -->
+        <button onclick="window.location.href='/login'">Login</button>
+        <!-- register button -->
+        <button onclick="window.location.href='/register'">Register</button>
     </div>
 
-    <!-- 在購物車部分顯示每個項目 -->
-    <!-- <h2>On Your Cart</h2>
-    <div id="cart-items">
-        {% for item in cart_items %}
-        <div class="cart-item">
-            <p>{{ item.product.name }}</p>
-            <form action="/update_cart_item/{{ item.id }}" method="post" style="display: flex; align-items: center;">
-                <button type="submit" name="remove_one" style="margin-right: 10px;">-</button>
-                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" style="margin-right: 10px;">
-                <button type="submit" name="add_one"
-                    style="display: flex; align-items: center; margin-right: 10px;">+</button>
-                <button type="submit" name="update" ">Update</button>
-            </form>
-            <form action=" /remove_cart_item/{{ item.id }}" method="post">
-                    <button type="submit" name="remove">Delete</button>
-            </form>
-        </div>
-        {% endfor %}
-    </div>
-    <h2>Checkout</h2>
-    <p>Total Price: {{ total_price }}</p>
-    <form action="/checkout" method="post">
-        <button type="submit">Checkout</button> -->
 </body>
 
 </html>
