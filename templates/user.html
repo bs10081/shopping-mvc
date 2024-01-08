@@ -5,10 +5,13 @@
     <meta charset="UTF-8">
     <title>User Dashboard</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/user.js"></script>
 </head>
 
 <body>
     <h1>Welcome, {{ current_user.username }}!</h1>
+    <button onclick="window.location.href='/shop'">Go Shopping</button>
+    <button onclick="window.location.href='/logout'">Logout</button>
     <div id="user-cart">
         <h2>Your Cart</h2>
         <ul>
@@ -24,9 +27,31 @@
             {% endfor %}
         </ul>
     </div>
-    <button onclick="window.location.href='/shop'">Go Shopping</button>
-    <button onclick="window.location.href='/logout'">Logout</button>
 
+    <div id="order-status">
+        <h2>Your Orders</h2>
+        <button onclick="window.location.href='/rating'">Not Rating Yet</button>
+        <ul id="orders-list">
+            {% for order in orders %}
+            <li>
+                Order ID: {{ order.id }} -
+                Status: {{ order.status }} -
+                Total: {{ order.total }} -
+                Rate your order:
+            </li>
+            {% else %}
+            <li>You have no orders.</li>
+            {% endfor %}
+        </ul>
+
+    </div>
+    </select>
+
+    </div>
+    <h3>Order Rating</h3>
+    <div id="order-list">
+        <!-- 訂單列表將在這裡動態填入 -->
+    </div>
 </body>
 
 </html>

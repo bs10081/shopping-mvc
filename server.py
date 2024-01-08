@@ -84,6 +84,29 @@ class Cart(db.Model):
     def __repr__(self):
         return f'<Cart {self.product_id}x{self.quantity}>'
 
+# Define the Order model
+
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(
+        db.Integer, db.ForeignKey('user.id'), nullable=False)
+    order_date = db.Column(db.DateTime, default=db.func.now())
+    # 可以是 pending, confirmed, shipped, delivered
+    status = db.Column(db.String(50), nullable=False, default='pending')
+    items = db.relationship('OrderItem', backref='order', lazy=True)
+    rating = db.Column(db.Integer, default=0)
+
+# Define the OrderItem model
+
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey(
+        'product.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
 
 # Route for the home page
 
@@ -153,7 +176,6 @@ def update_cart_item(item_id):
 def remove_cart_item(item_id):
     cart_item = Cart.query.filter_by(
         id=item_id, user_id=current_user.id).first_or_404()
-    # 完全刪除商品項目
     db.session.delete(cart_item)
     db.session.commit()
     return redirect(url_for('shop'))
@@ -178,6 +200,9 @@ def cart():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    # 檢查用戶是否有權限訪問管理員頁面
+    if current_user.role != 'admin':
+        return redirect(url_for('dashboard')), 401
     if request.method == 'POST':
         if "add" in request.form:
             # 從表單中獲取新產品資料並添加到數據庫
@@ -283,6 +308,118 @@ def shop():
     # 假設 Cart 是一個模型，存儲著用戶購物車內容
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
     return render_template('shop.html', products=products, cart_items=cart_items)
+
+
+# Route to checkout
+
+
+@app.route('/checkout', methods=['POST'])
+@login_required
+def checkout():
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    if not cart_items:
+        return jsonify({'error': 'Your cart is empty'}), 400
+
+    # 創建訂單
+    order = Order(customer_id=current_user.id)
+    db.session.add(order)
+    db.session.flush()  # 獲取訂單的 ID
+
+    # 創建訂單項目
+    for item in cart_items:
+        order_item = OrderItem(
+            order_id=order.id, product_id=item.product_id, quantity=item.quantity)
+        db.session.add(order_item)
+        db.session.delete(item)  # 清空購物車
+
+    db.session.commit()
+
+    return jsonify({'success': 'Your order has been placed', 'order_id': order.id})
+
+# 客戶查看訂單狀態的路由
+
+
+@app.route('/order_status', methods=['GET'])
+@login_required
+def order_status():
+    orders = Order.query.filter_by(customer_id=current_user.id).all()
+    order_list = [{'id': order.id, 'status': order.status,
+                   'rating': order.rating} for order in orders]
+    return jsonify(order_list)
+
+# 客戶對訂單評價的路由
+
+
+@app.route('/rating', methods=['GET'])
+@login_required
+def rating():
+    return render_template('rating.html')
+
+#
+
+
+@app.route('/user_orders')
+@login_required
+def user_orders():
+    # Replace 'Order' with your actual Order model and 'customer_id' with the actual foreign key to the User model.
+    orders_query = Order.query.filter_by(customer_id=current_user.id).all()
+    orders = [{'id': order.id, 'status': order.status,
+               'rating': order.rating} for order in orders_query]
+    return jsonify(orders)
+
+
+@app.route('/rate_order/<int:order_id>', methods=['POST'])
+@login_required
+def rate_order(order_id):
+    data = request.get_json()
+    rating = data['rating']
+    order = Order.query.get(order_id)
+    if order and order.customer_id == current_user.id:
+        order.rating = rating
+        db.session.commit()
+        return jsonify({'success': 'Rating submitted'}), 200
+    else:
+        return jsonify({'error': 'Order not found'}), 404
+
+
+# 商家查看所有訂單的路由
+
+@app.route('/orders', methods=['GET'])
+@login_required
+def orders():
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 401
+    orders = Order.query.all()
+    order_list = [{'id': order.id, 'status': order.status,
+                   'rating': order.rating} for order in orders]
+    return jsonify(order_list)
+
+
+# 商家更新訂單狀態的路由
+
+
+@app.route('/update_order_status/<int:order_id>', methods=['POST'])
+@login_required
+def update_order_status(order_id):
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 401
+    data = request.get_json()
+    new_status = data['status']
+    order = Order.query.get(order_id)
+    if order:
+        order.status = new_status
+        db.session.commit()
+        return jsonify({'success': 'Order status updated'}), 200
+    else:
+        return jsonify({'error': 'Order not found'}), 404
+
+
+# driver 的路由
+
+@app.route('/driver')
+def driver_page():
+    # 返回 driver.html 的內容
+    return render_template('driver.html')
 
 
 @app.route('/create_db')
