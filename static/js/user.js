@@ -53,6 +53,7 @@ function submitRating(orderId, rating) {
         .then(response => response.json())
         .then(data => {
             alert('Thank you for your rating!');
+            this.location.reload();
         })
         .catch(error => {
             console.error('Error:', error);

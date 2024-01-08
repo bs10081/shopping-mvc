@@ -1,79 +1,117 @@
 /* style.css */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f7f7f7;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
-}
-
-h1,
-h2 {
     color: #333;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #5D6473;
+    font-weight: 300;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 #product-list,
-#cart-items {
+#cart-items,
+#order-list {
     background-color: #ffffff;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    padding: 10px;
+    padding: 15px;
 }
 
 .product-item,
-.cart-item {
+.cart-item,
+.order-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #eeeeee;
-    padding: 10px;
+    padding: 10px 0;
 }
 
 .product-item:last-child,
-.cart-item:last-child {
+.cart-item:last-child,
+.order-item:last-child {
     border-bottom: none;
 }
 
 button {
     background-color: #5cb85c;
     color: white;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-right: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #4cae4c;
 }
 
-.add-to-cart-button {
-    background-color: #007bff;
-}
-
-.add-to-cart-button:hover {
-    background-color: #0056b3;
-}
-
-form {
-    display: flex;
-    align-items: center;
-}
-
-input[type="number"] {
+input[type="number"],
+select {
     padding: 8px;
-    margin-right: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #dddddd;
     border-radius: 5px;
-    width: 50px;
-}
-
-#cart-items {
-    padding: 0;
+    margin-right: 10px;
+    font-size: 16px;
 }
 
 .total-price {
     font-weight: bold;
+    color: #333;
     margin-top: 10px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+header,
+footer {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+header a,
+footer a {
+    color: white;
+}
+
+@media (max-width: 768px) {
+
+    .product-item,
+    .cart-item,
+    .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .product-item button,
+    .cart-item button,
+    .order-item button {
+        margin-top: 10px;
+    }
 }
