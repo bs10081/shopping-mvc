@@ -116,7 +116,8 @@ def add_to_cart(product_id):
                                  user_id=current_user.id)
             db.session.add(new_cart_item)
         db.session.commit()
-    return redirect(url_for('shop'))  # 改為跳轉到 shop.html
+    return jsonify({'success': True})
+
 # Route to edit the quantity of a product in the cart
 
 
@@ -137,6 +138,10 @@ def update_cart_item(item_id):
         if cart_item.quantity <= 0:
             db.session.delete(cart_item)
         db.session.commit()
+    else:
+        cart_item.quantity = 0
+        db.session.delete(cart_item)
+        db.session.commit()
     return redirect(url_for('shop'))
 
 
@@ -156,12 +161,17 @@ def remove_cart_item(item_id):
 # Route to view the cart
 
 
-@app.route('/cart')
-def view_cart():
-    cart_items = Cart.query.all()
-    total_price = sum(
-        [item.product.price * item.quantity for item in cart_items])
-    return render_template('cart.html', cart_items=cart_items, total_price=total_price)
+@app.route('/cart', methods=['GET', 'POST'])
+@login_required
+def cart():
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    cart_data = [{
+        'id': item.id,
+        'name': item.product.name,
+        'quantity': item.quantity,
+        'price': str(item.product.price),
+    } for item in cart_items]
+    return jsonify(cart_items=cart_data, total_price=total_price)
 
 
 # Route to view the admin page
