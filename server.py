@@ -84,6 +84,28 @@ class Cart(db.Model):
     def __repr__(self):
         return f'<Cart {self.product_id}x{self.quantity}>'
 
+# Define the Order model
+
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(
+        db.Integer, db.ForeignKey('user.id'), nullable=False)
+    order_date = db.Column(db.DateTime, default=db.func.now())
+    # 可以是 pending, confirmed, shipped, delivered
+    status = db.Column(db.String(50), nullable=False, default='pending')
+    items = db.relationship('OrderItem', backref='order', lazy=True)
+
+# Define the OrderItem model
+
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey(
+        'product.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
 
 # Route for the home page
 
@@ -153,7 +175,6 @@ def update_cart_item(item_id):
 def remove_cart_item(item_id):
     cart_item = Cart.query.filter_by(
         id=item_id, user_id=current_user.id).first_or_404()
-    # 完全刪除商品項目
     db.session.delete(cart_item)
     db.session.commit()
     return redirect(url_for('shop'))
@@ -283,6 +304,33 @@ def shop():
     # 假設 Cart 是一個模型，存儲著用戶購物車內容
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
     return render_template('shop.html', products=products, cart_items=cart_items)
+
+
+# Route to checkout
+
+
+@app.route('/checkout', methods=['POST'])
+@login_required
+def checkout():
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    if not cart_items:
+        return jsonify({'error': 'Your cart is empty'}), 400
+
+    # 創建訂單
+    order = Order(customer_id=current_user.id)
+    db.session.add(order)
+    db.session.flush()  # 獲取訂單的 ID
+
+    # 創建訂單項目
+    for item in cart_items:
+        order_item = OrderItem(
+            order_id=order.id, product_id=item.product_id, quantity=item.quantity)
+        db.session.add(order_item)
+        db.session.delete(item)  # 清空購物車
+
+    db.session.commit()
+
+    return jsonify({'success': 'Your order has been placed', 'order_id': order.id})
 
 
 @app.route('/create_db')
