@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <div id="user-cart">
+        <h2>Your Cart</h2>
+        <ul>
+            {% for item in cart_items %}
+            <li>
+                {{ item.product.name }} -
+                Quantity: {{ item.quantity }} -
+                Price: {{ item.product.price }} -
+                Subtotal: {{ item.quantity * item.product.price }}
+            </li>
+            {% else %}
+            <li>Your cart is empty.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <button onclick="window.location.href='/shop'">Go Shopping</button>
+    <button onclick="window.location.href='/logout'">Logout</button>
+
+</body>
+
+</html>

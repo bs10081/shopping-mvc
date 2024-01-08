@@ -9,6 +9,11 @@
 </head>
 
 <body>
+    <h1>McDonald's</h1>
+    <!-- login button -->
+    <button onclick="window.location.href='/login'">Login</button>
+    <!-- register button -->
+    <button onclick="window.location.href='/register'">Register</button>
     <h1>What Food You Can Buy</h1>
     <div id="product-list">
         {% for product in products %}
@@ -17,15 +22,13 @@
             <p>{{ product.description }}</p>
             <p>Price: {{ product.price }}</p>
             <!-- 加入購物車按鈕 -->
-            <form action="/add_to_cart/{{ product.id }}" method="post">
-                <button type="submit" class="add-to-cart-button">Add to Cart</button>
-            </form>
+            <button onclick="window.location.href='/login'">Add to Cart</button>
         </div>
         {% endfor %}
     </div>
 
     <!-- 在購物車部分顯示每個項目 -->
-    <h2>On Your Cart</h2>
+    <!-- <h2>On Your Cart</h2>
     <div id="cart-items">
         {% for item in cart_items %}
         <div class="cart-item">
@@ -46,7 +49,7 @@
     <h2>Checkout</h2>
     <p>Total Price: {{ total_price }}</p>
     <form action="/checkout" method="post">
-        <button type="submit">Checkout</button>
+        <button type="submit">Checkout</button> -->
 </body>
 
 </html>
