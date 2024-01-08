@@ -20,6 +20,46 @@ function addToCart(productId) {
         });
 }
 
+function updateCartItem(itemId, action, quantity = 1) {
+    fetch('/update_cart_item/' + itemId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+
+        },
+        body: JSON.stringify({ action: action, quantity: quantity })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadCart();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function removeCartItem(itemId) {
+    fetch('/remove_cart_item/' + itemId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadCart();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+
+
 function loadCart() {
     fetch('/cart')
         .then(response => response.json())
@@ -42,4 +82,35 @@ function updateCartDisplay(cartItems) {
         </div>
     `).join('');
 }
+
+
+document.getElementById('checkout-btn').addEventListener('click', () => {
+    fetch('/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to place order');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // 將總價格更新為 0 或隱藏相關元素
+                // document.getElementById('total-price').textContent = '0';
+                // document.getElementById('total-price').style.display = 'none';
+
+                // 清空購物車顯示
+                // document.getElementById('cart').innerHTML = '';
+                location.reload();
+            }
+
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
 

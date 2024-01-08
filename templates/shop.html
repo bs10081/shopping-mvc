@@ -33,7 +33,7 @@
     <div id="cart">
         {% for item in cart_items %}
         <div class="cart-item">
-            <span>{{ item.product.name }} - Quantity: {{ item.quantity }}</span>
+            <span>{{ item.product.name }}</span>
             <form action="/update_cart_item/{{ item.id }}" method="post">
                 <button type="submit" name="remove">Delete</button>
                 <button type="submit" name="remove_one">-</button>
