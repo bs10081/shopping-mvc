@@ -5,8 +5,148 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Page</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- <link rel="stylesheet" href="/static/css/style.css"> -->
     <script src="/static/js/admin.js"></script>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f7;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #06c;
+            text-decoration: none;
+        }
+
+        /* Admin Page Styles */
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header .logout {
+            float: right;
+            background-color: #d9534f;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .header .logout:hover {
+            background-color: #c9302c;
+        }
+
+        .main-content {
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #e3e3e3;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .add-product input,
+        .add-product button {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .add-product button {
+            background-color: #5cb85c;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+        }
+
+        .add-product button:hover {
+            background-color: #4cae4c;
+        }
+
+        .product-list table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .product-list th,
+        .product-list td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-list th {
+            background-color: #f9f9f9;
+        }
+
+        .order-management button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .order-management .mark-as-shipped {
+            background-color: #5bc0de;
+            color: #fff;
+        }
+
+        .order-management .cancel-order {
+            background-color: #f0ad4e;
+            color: #fff;
+        }
+
+        .order-management button:hover {
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header .logout {
+                float: none;
+                display: block;
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .add-product input,
+            .add-product button {
+                display: block;
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>

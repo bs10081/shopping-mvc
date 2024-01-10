@@ -6,21 +6,32 @@
     <title>Register</title>
     <link rel="stylesheet" href="static/css/style.css">
 </head>
+<!DOCTYPE html>
+<html lang="en">
 
 <body>
-    <h1>Register</h1>
-    <form method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+    <div id="register-container">
+        <h1>Register</h1>
+        <form id="login-form" method="post">
+            <div class="form-group">
+                <p><label for="username" id="info">Username:</label></p>
+                <input type="text" id="username" name="username" required>
+            </div>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+            <div class="form-group">
+                <p><label for="password" id="info">Password:</label></p>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <!-- login button -->
 
-        <input type="submit" value="Register">
-    </form>
-    <!-- login button -->
-    <h3>Already have an account?</h3>
-    <button onclick="window.location.href='/login'">Login</button>
+        <div id="info">
+            <p>Already have an account? <a href="/login">Login</a></p>
+        </div>
+
 </body>
+
+</html>
 
 </html>
