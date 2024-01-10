@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function createRatingSelect(orderId) {
     const select = document.createElement('select');
     select.id = `rating-${orderId}`;
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 0; i <= 5; i++) {
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;
